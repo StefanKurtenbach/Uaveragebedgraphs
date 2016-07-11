@@ -99,16 +99,9 @@ def add (input1, input2, newfile):
 
 
 
-#_______________________________________
+#Code to sum bedgraph files goes here_______________________________________
 
 
-add("3.bedgraph", "4.bedgraph", "34.txt")
-add("5.bedgraph", "6.bedgraph", "56.txt")
-add("7.bedgraph", "8.bedgraph", "78.txt")
-add("9.bedgraph", "10.bedgraph", "910.txt")
+add("3.bedgraph", "4.bedgraph", "34.txt") #example
 
-add("34.txt", "56.txt", "3456.txt")
-add("78.txt", "910.txt", "78910.txt")
-
-add("3456.txt", "78910.txt", "345678910.txt")
-add("345678910.txt", "2.bedgraph", "final.txt")
+# ... add more
