@@ -1,2 +1,2 @@
 # Uaddbedgraph
-Sums up sorted bedgraph files and normalizes them according the the number of files.
+Sums up sorted bedgraph files and normalizes (divides) them according the the number of files.
