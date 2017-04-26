@@ -1,5 +1,4 @@
 #needs sorted files
-#sums bedgraph files
 
 import os
 from array import *
