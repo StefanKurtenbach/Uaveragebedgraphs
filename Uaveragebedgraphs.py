@@ -1,5 +1,6 @@
 # needs sorted BDG files
 # Uaveragebedgraphs v1.1
+# There is probably a more efficient way...
 
 import argparse
 import os
