@@ -1,7 +1,17 @@
-#needs sorted files
+# needs sorted BDG files
+# Uaveragebedgraphs v1.1
 
+import argparse
 import os
 from array import *
+
+parser = argparse.ArgumentParser(description='Uaveragebedgraphs_args')
+parser.add_argument('-o','--output', help='name of output file', required=True, type=str)
+parser.add_argument('-f','--list_of_files', help='files to be averaged', required=True, nargs='+', type=str)
+
+args = vars(parser.parse_args())
+files = args['list_of_files']
+output_file = args['output']
 
 def add (input, newfile):
     nr_files = len(input)
@@ -134,5 +144,5 @@ def add (input, newfile):
 
 
 ############################################################################
-input = ["2.bedgraph", "3.bedgraph","4.bedgraph", "5.bedgraph","6.bedgraph", "7.bedgraph","8.bedgraph", "9.bedgraph","13.bedgraph", "14.bedgraph", "1.bedgraph", "15.bedgraph"]
-add(input, "testoutput.bedgraph")
+
+add(files, output_file)
