@@ -1,28 +1,23 @@
-# needs sorted BDG files
-# Uaveragebedgraphs v1.1
-# There is probably a more efficient way...
+# Uaveragebedgraphs v2.0
 
 import argparse
 import os
 from array import *
 
+#get arguments from command line
 parser = argparse.ArgumentParser(description='Uaveragebedgraphs_args')
 parser.add_argument('-o','--output', help='name of output file', required=True, type=str)
 parser.add_argument('-f','--list_of_files', help='files to be averaged', required=True, nargs='+', type=str)
-
 args = vars(parser.parse_args())
 files = args['list_of_files']
 output_file = args['output']
 
 def add (input, newfile):
-    nr_files = len(input)
     done = "no"
     chromosomes_done = []
     while done == "no":
-        output_ctl = []
-        output_treatment = []
-        output = []
-        # get current chromosome
+
+# get current chromosome
         with open(input[0]) as ctrl:
             current_chromosome = ""
             done = "yes"
@@ -32,118 +27,70 @@ def add (input, newfile):
                 if line_split[0] not in chromosomes_done:
                     chromosomes_done.append(line_split[0])
                     current_chromosome = line_split[0]
-                    print("Current Chromosome: " + current_chromosome)
                     done = "no"
                     break
             if done == "yes":
                 break
-        start = 1000000000 #prelim values
+
+# get start and stop for current chromosome
         stop = 0
-        # get start and stop for current chromosome
-        for file in input:
+
+        for file in input: # go through all files
             with open(file) as f:
                 breakyn = "no"
-                prime = "no"
+                found = "no" #was chromosome found?
+
                 for line in f:
-                    if breakyn == "yes": break
+                    if breakyn == "yes": break # if passed the current chromosome (no need to check the rest of the file)
                     line_split = line.split("\t")
-                    if line_split[0] == current_chromosome:
-                        if prime == "no":
-                            if int(line_split[1]) < start:
-                                start = int(line_split[1])
-                            prime = "yes"
-                        elif prime == "yes":
-                            stop_temp = int(line_split[2])
-                    elif prime == "yes":
-                        if line_split[0] != current_chromosome:
-                            breakyn = "yes"
-                if stop < stop_temp:
-                        stop = stop_temp
-        # make empty output lists (multiple to avoid memory errors)
-        length = stop - start
-        output_temp1 = []
-        output_temp2 = []
-        output_temp3 = []
-        output_start = []
-        output_stop = []
-        output_value = []
 
-        if length < 100000000:
-            output_temp1 = array('f',[0]*length)
-        elif length < 200000000:
-                output_temp1 = array('f', [0] * 100000000)
-                output_temp2 = array('f', [0] * (length - 100000000))
-        elif length < 300000000:
-            output_temp1 = array('f', [0] * 100000000)
-            output_temp2 = array('f', [0] * 100000000)
-            output_temp3 = array('f', [0] * (length - 200000000))
-
-        #sum up
-        for file in input:
-            with open(file) as file2:
-                breakyn = "no"
-                for line in file2:
-                    line_split = line.split("\t")
                     if line_split[0] == current_chromosome:
+                        if line_split[3] != 0:
+                            if line_split[2] > stop:
+                                stop = int(line_split[2])
+                    elif found == "yes": #if passed chromosome trigger break
                         breakyn = "yes"
-                        line_split[3] = line_split[3].replace("\n", "")
-                        for o in range(int(line_split[2]) - int(line_split[1])):
-                            coord = o + int(line_split[1]) - start
-                            if coord < 100000000:
-                                output_temp1[coord] = output_temp1[coord] + float(line_split[3])
-                            elif coord < 200000000:
-                                    output_temp2[coord - 100000000] = output_temp2[coord - 100000000] + float(line_split[3])
-                            elif coord < 300000000:
-                                output_temp3[coord - 200000000] = output_temp3[coord - 200000000] + float(line_split[3])
-                    elif breakyn == "yes": break
-        output_start = array('I',[0]*15000000)
-        output_stop = array('I',[0]*15000000)
-        output_value = array('f',[0]*15000000)
-        next = "no"
-        for l in range(length):
-            if l < 100000000:
-                if output_temp1[l] != 0:
-                    if output_value[0] == 0:
-                        output_start[0] = start
-                        output_stop[0] = start + 1
-                        output_value[0] = output_temp1[0]
-                        position = 0 # filled positions in array
-                    elif output_temp1[l] == output_value[position]:
-                            output_stop[position] += 1
-                    else:
-                        position += 1
-                        output_start[position] = start + l
-                        output_stop[position] = start + l + 1
-                        output_value[position] = output_temp1[l]
-            elif l < 200000000:
-                if output_temp2[l-100000000] != 0:
-                    if output_temp2[l-100000000] == output_value[position]:
-                        output_stop[position] += 1
-                    else:
-                        position += 1
-                        output_start[position] = start + l
-                        output_stop[position] = start + l + 1
-                        output_value[position] = output_temp2[l-100000000]
-            elif l < 300000000:
-                if output_temp3[l-200000000] != 0:
-                    if output_temp3[l-200000000] == output_value[position]:
-                        output_stop[position] += 1
-                    else:
-                        position += 1
-                        try:
-                            output_start[position] = start + l
-                            output_stop[position] = start + l + 1
-                            output_value[position] = output_temp3[l-200000000]
-                        except:
-                            print("l: " + str(l))
-                            print("position: " + str(position))
 
-        with open(newfile, "a") as f:
-            for x, row in enumerate(output_start):
-                if output_value[x] > 0:
-                    f.write(str(current_chromosome) + "\t" + str(row) + "\t" + str(output_stop[x]) + "\t" + str(output_value[x]/nr_files) + "\n")
+        if stop > 0:  #If there were values in that chromosome
+            output = array('f', [0] * stop)
 
+#sum up
+            for file in input:
+                with open(file) as f:
+                    breakyn = "no"
+                    for line in f:
+                        line_split = line.split("\t")
+                        if line_split[0] == current_chromosome:
+                            if float(line_split[3]) > 0:
+                                breakyn = "yes"
+                                line_split[3] = line_split[3].replace("\n", "")
+                                for o in range(int(line_split[2]) - int(line_split[1])):
+                                    coord = o + int(line_split[1])
+                                    output[coord] = output[coord] + float(line_split[3])/len(input)
+                        elif breakyn == "yes": break
+
+#concatenate entries with same value
+            output2 = []
+            temp_entry = []
+            for x, value in enumerate(output):
+                if value != 0:
+                    if temp_entry == []:
+                        temp_entry = [current_chromosome, x, x + 1, value]
+                    elif temp_entry[3] == value:
+                        temp_entry[2] += 1
+                    elif temp_entry[3] != value:
+                        output2.append(temp_entry)
+                        temp_entry = [current_chromosome, x, x + 1, value]
+                else: temp_entry == []
+
+            if temp_entry != []:
+                output2.append(temp_entry)
+
+            with open(newfile, "a") as f:
+                for row in output2:
+                    f.write(str(row[0]) + "\t" + str(row[1]) + "\t" + str(row[2]) + "\t" + str(row[3]) + "\n")
 
 ############################################################################
 
 add(files, output_file)
+print("Success :)")
