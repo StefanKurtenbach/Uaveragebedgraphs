@@ -1,4 +1,4 @@
-# Uaveragebedgraphs v2.1
+# Uaveragebedgraphs v2.2
 
 import argparse
 import os
