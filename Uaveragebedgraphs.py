@@ -12,27 +12,24 @@ args = vars(parser.parse_args())
 files = args['list_of_files']
 output_file = args['output']
 
+
+
 def add (input, newfile):
-    done = "no"
-    chromosomes_done = []
-    while done == "no":
 
-# get current chromosome
-        breakyn = "no"
-        for file in input:
-            if breakyn == "yes": break
-            with open(file) as f:
-                current_chromosome = ""
-                for line in f:
-                    line_split = line.split("\t")
-                    line_split[3] = line_split[3].replace("\n", "")
-                    if line_split[0] not in chromosomes_done:
-                        chromosomes_done.append(line_split[0])
-                        current_chromosome = line_split[0]
-                        breakyn = "yes"
-                        break
+# make list of chromosomes
+    chromosomes = []
+    for file in input:
+        print(file)
+        with open(file) as f:
+            for line in f:
+                line_split = line.split("\t")
+                if line_split[0] not in chromosomes:
+                    chromosomes.append(line_split[0])
 
-# get start and stop for current chromosome
+
+    while len(chromosomes) != 0:
+
+# get length of current chromosome (last read)
         stop = 0
         for file in input: # go through all files
             with open(file) as f:
@@ -41,7 +38,7 @@ def add (input, newfile):
                     if line_split[0] == current_chromosome:
                         if int(line_split[2]) > stop:
                             stop = int(line_split[2])
-        if stop > 0:  #If there were values in that chromosome
+        if stop > 0:  #continue only if values in chromosome
             output = array('f', [0] * stop)
 
 #sum up
@@ -49,20 +46,12 @@ def add (input, newfile):
                 with open(file) as f:
                     for line in f:
                         line_split = line.split("\t")
+                        line_split[3] = line_split[3].replace("\n", "")
                         if line_split[0] == current_chromosome:
                             if float(line_split[3]) > 0:
-                                line_split[3] = line_split[3].replace("\n", "")
                                 for o in range(int(line_split[2]) - int(line_split[1])):
                                     coord = o + int(line_split[1])
-                                    try:
-                                        output[coord] = output[coord] + float(line_split[3])/len(input)
-                                    except:
-                                        print("array_len: " + str(len(output)))
-                                        print("stop:" + str(len(output)))
-                                        print("o:" + str(o))
-                                        print("coord:" + str(coord))
-                                        print("line_split:" + str(line_split))
-                                        print("line_split3:" + str(line_split[3]))
+                                    output[coord] = output[coord] + float(line_split[3])/len(input)
 
 #concatenate entries with same value
             output2 = []
