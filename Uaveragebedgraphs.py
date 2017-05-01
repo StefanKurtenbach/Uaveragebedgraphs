@@ -1,4 +1,4 @@
-# Uaveragebedgraphs v2.2
+# Uaveragebedgraphs v2.3
 
 import argparse
 import os
@@ -26,10 +26,14 @@ def add (input, newfile):
                 if line_split[0] not in chromosomes:
                     chromosomes.append(line_split[0])
 
+    done = "no"
+    while done == "no":
+        try:
+            current_chromosome = chromosomes.pop(0)
+        except:
+            break
 
-    while len(chromosomes) != 0:
-
-# get length of current chromosome (last read)
+# get length of current chromosome
         stop = 0
         for file in input: # go through all files
             with open(file) as f:
