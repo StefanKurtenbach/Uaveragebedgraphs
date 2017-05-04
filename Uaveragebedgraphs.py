@@ -19,7 +19,6 @@ def add (input, newfile):
 # make list of chromosomes
     chromosomes = []
     for file in input:
-        print(file)
         with open(file) as f:
             for line in f:
                 line_split = line.split("\t")
