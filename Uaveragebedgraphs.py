@@ -1,4 +1,4 @@
-# Uaveragebedgraphs v2.3
+# Uaveragebedgraphs v2.4
 
 import argparse
 import os
@@ -12,7 +12,8 @@ args = vars(parser.parse_args())
 files = args['list_of_files']
 output_file = args['output']
 
-
+try: os.remove(output_file)
+except: pass
 
 def add (input, newfile):
 
